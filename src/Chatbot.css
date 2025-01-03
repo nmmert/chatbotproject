@@ -1,0 +1,316 @@
+.chatbot {
+    max-width: 400px;
+    margin: 20px auto;
+    border: 1px solid #d7ccc8;
+    border-radius: 10px;
+    padding: 10px;
+    font-family: "Arial", sans-serif;
+    background-color: #f8f3eb;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .chat-window {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #d7ccc8;
+    border-radius: 10px;
+    background-color: #fffdf6;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .message.You {
+    text-align: right;
+    background-color: #d4a373; 
+    color: #fff;
+    align-self: flex-end;
+  }
+  
+  .message.Bot {
+    text-align: left;
+    background-color: #f0e6d4;
+    color: #3e2723; 
+  }
+
+  .message.Barista {
+    text-align: left;
+    background-color: #f0e6d4;
+    color: #3e2723; 
+  }
+
+  .coffee-menu {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three columns */
+    gap: 10px;
+  }
+
+  .coffee-item {
+    position: relative;;
+  }
+
+  .coffee-button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #f0e4d7;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1;
+  }
+
+  .coffee-button.active {
+    background-color: #d1bfa6;
+  }
+
+  .size-options{
+    position: absolute;
+    top: -60px; /*adjust*/
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    z-index: 2;
+  }
+
+  .size-button{
+    padding: 5px 10px;
+    border: none;
+    background-color: #87ceeb;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .size-button:hover{
+    background-color: #5fa8d3;
+  }
+  
+  .coffee-menu button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: #cbbeb5; /* Pastel beige */
+    color: #3e2723; /* Dark coffee brown */
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .coffee-menu button:hover {
+    background-color: #a1887f; /* Warm brown */
+    color: #fff;
+  }
+  
+  button:active {
+    transform: scale(0.98);
+  }
+  
+  .chat-input {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .chat-input input {
+    padding: 10px;
+    border: 1px solid #d7ccc8;
+    border-radius: 8px;
+    background-color: #fffdf6; 
+  }
+  
+  .chat-input input:focus {
+    outline: none;
+    border-color: #a1887f;
+  }
+
+  button.end-conversation{
+    color: #c9c3bf;
+    background-color: #89726d;
+    border: none;
+    border-radius: 8px;
+    padding: 5px;
+  }
+
+  button.end-order{
+    background-color: #89726d;
+    color: #c9c3bf;
+    border: none;
+    border-radius: 8px;
+    padding: 5px;
+  }
+
+  button.order-button{
+    background-color: #89726d;
+    color: #c9c3bf;
+    border: none;
+    border-radius: 8px;
+    padding: 5px;
+  }
+
+  button.size-options:hover{
+    background-color: #89726d;
+    color: #c9c3bf;
+    border: none;
+    border-radius: 8px;
+    padding: 5px;
+  }
+
+  button.size-button.active{
+    background-color: #d4a373;
+    color: #fff;
+  }
+
+  /*button.return-menu{
+    color: #c9c3bf;
+    background-color: #89726d;
+    border: none;
+    border-radius: 8px;
+    padding: 5px;
+  }*/
+  
+  .button-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  
+  .button-options button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: #cbbeb5;
+    color: #3e2723; 
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .button-options button:hover {
+    background-color: #a1887f;
+    color: #fff;
+  }
+  
+  button:active {
+    transform: scale(0.98);
+  }
+  
+.landing-page {
+    position: fixed;
+    left: 0;
+    align-items: center;
+    max-height: 200px;
+    width: 1440px;
+    background-color: #f5f5f5;
+    margin: 0px auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+.products-grid {
+  gap: 10px;
+  padding: 10px;
+  width: 100%;
+  max-height: auto;
+  /*overflow-y: auto;*/
+  margin: 0 auto;
+}
+
+.product-card {
+  background-color: #ffffff;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+
+/*.product-card-button {
+  background-color: beige;
+  border: none;
+  padding: 10px;
+}*/
+
+.product-image img {
+  height: 100px;
+  width: 100px;
+  max-width: 100%;
+  max-height: 100% ;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.product-card h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.product-details {
+  display: flex; /* Align items side by side */
+  justify-content: space-between; /* Space them out evenly */
+  align-items: center; /* Center vertically */
+  margin: 5px 0;
+}
+
+.bean-origin,
+.bean-price {
+  display: inline-block;
+  font-size: 14px;
+  justify-content: space-between;
+}
+
+.bean-origin {
+  color: #666;
+  font-size: 13px;
+  margin: 0;
+}
+
+.bean-price {
+  font-size: 14px;
+}
+
+@media (max-width: 1200px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .button-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}  
+
+  body {
+    background-color: #eae7dc; 
+    color: #3e2723; 
+    font-family: "Arial", sans-serif;
+  }
+  
+  .App{
+    text-align: center;
+  }
