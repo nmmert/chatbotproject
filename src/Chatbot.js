@@ -167,116 +167,119 @@ const Chatbot = () => {
     }, [messages]);
 
     return (
-        <div className="chatbot">
-            <div className="chat-window" ref={chatWindowRef}>
-                {messages.map((msg, index) => (
-                    <div key={index} className={`message ${msg.sender}`}>
-                        <strong>{msg.sender}:</strong> {msg.text}
-                    </div>
-                ))}
-                {loading && (
-                    <div className="message Barista">
-                        <strong>Barista is thinking...</strong>
-                    </div>
-                )}
-            </div>
-            <div className="chat-input">
-                {currentStep === "start" ? (
-                    <div className="button-options">
-                        <button onClick={() => handleOptionClick("Order a coffee")}>Order a coffee</button>
-                        <button onClick={() => handleOptionClick("Ask the barista")}>Ask the barista</button>
-                        <button onClick={() => handleOptionClick("Find your taste of coffee")}>Find your taste of coffee</button>
-                        <button onClick={() => handleOptionClick("Make your custom coffee")}>Make your custom coffee</button>
-                    </div>
-                ) : currentStep === "orderCoffee" ? (
-                    <div className="coffee-menu">
-                        {coffeeMenu.map((coffee) => (
-                            <div className="coffee-item" key={coffee}>
-                                <button 
-                                    className= {`coffee-button ${
-                                        selectedCoffee === coffee ? "active" : ""
-                                    }`}
-                                    onClick={() => handleCoffeeClick(coffee)}
-                                >
-                                    {coffee}
-                                </button>
-                                {selectedCoffee === coffee && (
-                                    <div className="size-options">
-                                        {sizeOptions.map((size) => (
-                                            <button
-                                                key={size}
-                                                className={`size-button ${
-                                                selectedSize === size ? "active" : ""
-                                                }`}
-                                                onClick={() => setSelectedSize(size)}
-                                            >
-                                                {size}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    {orderActive && (
-                            <button className="end-order" onClick={handleEndOrderCoffee}>
-                                End Order
-                            </button>
-                        )}
-                    {selectedCoffee && selectedSize && (
-                        <button
-                            className="order-button"
-                            onClick={() => handleCoffeeSelection(selectedCoffee, selectedSize)}
-                        >
-                            Order
-                        </button>
+        <div>
+            <div className="chatbot">
+                <div className="chat-window" ref={chatWindowRef}>
+                    {messages.map((msg, index) => (
+                        <div key={index} className={`message ${msg.sender}`}>
+                            <strong>{msg.sender}:</strong> {msg.text}
+                        </div>
+                    ))}
+                    {loading && (
+                        <div className="message Barista">
+                            <strong>Barista is thinking...</strong>
+                        </div>
                     )}
-                    </div>
-                ) : currentStep === "askBarista" ? (
-                    <>
-                        <input
-                            type="text"
-                            placeholder="Ask the barista a question"
-                            onKeyDown={handleInputKeyDown}
-                        />
-                        {askBaristaActive && (
-                            <button className="end-conversation" onClick={handleEndConversation}>
-                                End the Conversation
-                            </button>
-                        )}
-                    </>
-                /*) : currentStep === "findCoffeeTaste" ? (
-                    
-                ) : null}*/
-                ) : null}
-            </div>
-            <div>
-                {currentStep === "findCoffeeTaste" ? (
-                    <div className="landing-page">
-                        <div className="products-grid">
-                            {coffeeProducts.map((product) => (
-                                <div className="product-card" key={product}>
-                                    <button
-                                        className={`product-card-button ${
-                                            selectedCoffeeProduct === product ? "active" : ""
-                                    }`}
-                                    onClick={() => handleLandingPage(product)}
+                </div>
+                <div className="chat-input">
+                    {currentStep === "start" ? (
+                        <div className="button-options">
+                            <button onClick={() => handleOptionClick("Order a coffee")}>Order a coffee</button>
+                            <button onClick={() => handleOptionClick("Ask the barista")}>Ask the barista</button>
+                            <button onClick={() => handleOptionClick("Find your taste of coffee")}>Find your taste of coffee</button>
+                            <button onClick={() => handleOptionClick("Make your custom coffee")}>Make your custom coffee</button>
+                        </div>
+                    ) : currentStep === "orderCoffee" ? (
+                        <div className="coffee-menu">
+                            {coffeeMenu.map((coffee) => (
+                                <div className="coffee-item" key={coffee}>
+                                    <button 
+                                        className= {`coffee-button ${
+                                            selectedCoffee === coffee ? "active" : ""
+                                        }`}
+                                        onClick={() => handleCoffeeClick(coffee)}
                                     >
-                                        <h3>{product.name}</h3>
-                                        <div className="product-image">
-                                            <img src={product.image} alt={product.name} />
-                                        </div>
-                                        <div className="product-details">
-                                            <p className="bean-origin">{product.origin}</p>
-                                            <p className="bean-price">{product.price}</p>
-                                        </div>
+                                        {coffee}
                                     </button>
+                                    {selectedCoffee === coffee && (
+                                        <div className="size-options">
+                                            {sizeOptions.map((size) => (
+                                                <button
+                                                    key={size}
+                                                    className={`size-button ${
+                                                    selectedSize === size ? "active" : ""
+                                                    }`}
+                                                    onClick={() => setSelectedSize(size)}
+                                                >
+                                                    {size}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
+                        {orderActive && (
+                                <button className="end-order" onClick={handleEndOrderCoffee}>
+                                    End Order
+                                </button>
+                            )}
+                        {selectedCoffee && selectedSize && (
+                            <button
+                                className="order-button"
+                                onClick={() => handleCoffeeSelection(selectedCoffee, selectedSize)}
+                            >
+                                Order
+                            </button>
+                        )}
                         </div>
-                    </div>
+                    ) : currentStep === "askBarista" ? (
+                        <>
+                            <input
+                                type="text"
+                                placeholder="Ask the barista a question"
+                                onKeyDown={handleInputKeyDown}
+                            />
+                            {askBaristaActive && (
+                                <button className="end-conversation" onClick={handleEndConversation}>
+                                    End the Conversation
+                                </button>
+                            )}
+                        </>
+                    /*) : currentStep === "findCoffeeTaste" ? (
+                        
+                    ) : null}*/
                     ) : null}
+                </div>
+                
             </div>
+            <div>
+            {currentStep === "findCoffeeTaste" ? (
+                <div className="landing-page">
+                    <div className="products-grid">
+                        {coffeeProducts.map((product) => (
+                            <div className="product-card" key={product}>
+                                <button
+                                    className={`product-card-button ${
+                                        selectedCoffeeProduct === product ? "active" : ""
+                                }`}
+                                onClick={() => handleLandingPage(product)}
+                                >
+                                    <h3>{product.name}</h3>
+                                    <div className="product-image">
+                                        <img src={product.image} alt={product.name} />
+                                    </div>
+                                    <div className="product-details">
+                                        <p className="bean-origin">{product.origin}</p>
+                                        <p className="bean-price">{product.price}</p>
+                                    </div>
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                ) : null}
         </div>
+    </div>
     );
 };
 export default Chatbot;

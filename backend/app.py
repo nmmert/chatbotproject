@@ -1,10 +1,11 @@
+import json
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import os
 import google.generativeai as genai
-from sqlalchemy import create_engine, Column, Integer, String, Float
+from sqlalchemy import JSON, create_engine, Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
@@ -55,29 +56,32 @@ generation_config = {
     "response_mime_type": "text/plain",
 }
 
+
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash-8b",
+    model_name="gemini-2.0-flash-exp",
     generation_config=generation_config,
     system_instruction="""
         Consider yourself as a barista and coffee expert. You will answer the questions of the customers about coffee and the products in the menu.
-        Don't give answers with more than 80 words. Give answers in English or Turkish language.
+        Don't give answers with more than 80 words.
+        Answer only in {response_language} language. Don't type {response_language} in your answer.
+        If the customer starts the conversation with "Hello", or "Hi", you will proceed in English.
         """,
 )
 
 coffee_products_data = {
     "coffee_products": [
             {"id":1, "name": 'Ethiopian Yirgacheffe', "price": '$18.99', "origin": 'Ethiopia', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
-            {"id":2, "name": 'Colombian Supremo', "price": '$16.99', "origin": 'Colombia' },
-            {"id":3, "name": 'Costa Rican Tarrazu', "price": '$17.99', "origin": 'Costa Rica' },
-            {"id":4, "name": 'Sumatra Mandheling', "price": '$19.99', "origin": 'Indonesia' },
-            {"id":5, "name": 'Kenya AA', "price": '$20.99', "origin": 'Kenya' },
-            {"id":6, "name": 'Guatemala Antigua', "price": '$18.99', "origin": 'Guatemala' },
-            {"id":7, "name": 'Brazilian Santos', "price": '$15.99', "origin": 'Brazil' },
-            {"id":8, "name": 'Jamaica Blue Mountain', "price": '$49.99', "origin": 'Jamaica' },
-            {"id":9, "name": "Hawaiian Kona", "price": '$45.99', "origin": 'Hawaii' },
-            {"id":10, "name": 'Indian Malabar', "price": '$17.99', "origin": 'India' },
-            {"id":11, "name": 'Vietnamese Robusta', "price": '$14.99', "origin": 'Vietnam' },
-            {"id":12, "name": 'Mexican Altura', "price": '$16.99', "origin": 'Mexico' }
+            {"id":2, "name": 'Colombian Supremo', "price": '$16.99', "origin": 'Colombia', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":3, "name": 'Costa Rican Tarrazu', "price": '$17.99', "origin": 'Costa Rica', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":4, "name": 'Sumatra Mandheling', "price": '$19.99', "origin": 'Indonesia', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":5, "name": 'Kenya AA', "price": '$20.99', "origin": 'Kenya', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":6, "name": 'Guatemala Antigua', "price": '$18.99', "origin": 'Guatemala', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":7, "name": 'Brazilian Santos', "price": '$15.99', "origin": 'Brazil', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":8, "name": 'Jamaica Blue Mountain', "price": '$49.99', "origin": 'Jamaica', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":9, "name": "Hawaiian Kona", "price": '$45.99', "origin": 'Hawaii', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":10, "name": 'Indian Malabar', "price": '$17.99', "origin": 'India', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":11, "name": 'Vietnamese Robusta', "price": '$14.99', "origin": 'Vietnam', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":12, "name": 'Mexican Altura', "price": '$16.99', "origin": 'Mexico', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
     ],
 }
 
@@ -179,6 +183,8 @@ async def get_order_status(order_id: int, db: Session = Depends(get_db)):
 
 @app.post("/ask-barista/")
 async def ask_barista(question: Question):
+    response_language = "English" if "turkish" not in question.question.lower() else "Turkish"
+
     try:
         # Start a new chat session
         chat_session = model.start_chat()
@@ -194,8 +200,8 @@ async def ask_barista(question: Question):
             full_message = question.question
 
         # Send the message and return the result
-        result = chat_session.send_message(full_message)
-        return {"text": result.text}
+        result = chat_session.send_message(full_message + json.dumps(coffee_menu_data))
+        return {"text": result.text, "language": response_language}
 
     except Exception as e:
         # Log the error (for internal debugging purposes)

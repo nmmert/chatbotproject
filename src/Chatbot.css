@@ -210,58 +210,50 @@
   }
   
 .landing-page {
-    position: fixed;
-    left: 0;
-    align-items: center;
-    max-height: 200px;
-    width: 1440px;
-    background-color: #f5f5f5;
-    margin: 0px auto;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+    width: 100%;
   }
 
 .products-grid {
-  gap: 10px;
-  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
+  gap: 24px;
   width: 100%;
-  max-height: auto;
-  /*overflow-y: auto;*/
-  margin: 0 auto;
+  justify-content: center;
 }
 
 .product-card {
-  background-color: #ffffff;
-  padding: 10px;
+  background-color: #fff;
+  padding: 16px;
   border: 1px solid #ddd;
   border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
+  transition: transform 0.3s;
+  /*justify-content: space-between;*/
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
 }
 
-
-/*.product-card-button {
-  background-color: beige;
-  border: none;
-  padding: 10px;
-}*/
+.product-card:hover {
+  transform: scale(1.05);
+}
 
 .product-image img {
-  height: 100px;
-  width: 100px;
-  max-width: 100%;
-  max-height: 100% ;
+  width: 150px;
+  height: 150px;
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
 .product-card h3 {
-  margin-bottom: 10px;
   font-size: 18px;
+  margin: 8px 0;
   font-weight: bold;
 }
 
@@ -277,16 +269,26 @@
   display: inline-block;
   font-size: 14px;
   justify-content: space-between;
+  margin-bottom: 6px;
 }
 
 .bean-origin {
   color: #666;
   font-size: 13px;
-  margin: 0;
 }
 
 .bean-price {
   font-size: 14px;
+}
+
+.product-card-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  flex-direction: column ;
+  align-items: center;
 }
 
 @media (max-width: 1200px) {
@@ -303,7 +305,8 @@
   .button-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-}  
+}
+
 
   body {
     background-color: #eae7dc; 
