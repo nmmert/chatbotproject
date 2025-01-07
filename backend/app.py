@@ -1,5 +1,5 @@
 import json
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -68,17 +68,42 @@ model = genai.GenerativeModel(
         """,
 )
 
+coffee_groups = {
+    "000": {"product_ids": [1, 2, 3]},
+    "100": {"product_ids": [5, 12, 2]},
+    "200": {"product_ids": [3, 7, 11]},
+    "010": {"product_ids": [2, 9, 3]},
+    "020": {"product_ids": [1, 7, 8]},
+    "001": {"product_ids": [4, 10, 5]},
+    "002": {"product_ids": [8, 11, 2]},
+    "101": {"product_ids": [6, 8, 3]},
+    "102": {"product_ids": [11, 2, 7]},
+    "201": {"product_ids": [1, 5, 11]},
+    "202": {"product_ids": [4, 8, 3]},
+    "110": {"product_ids": [6, 10, 7]},
+    "120": {"product_ids": [3, 12, 1]},
+    "111": {"product_ids": [4, 5, 6]},
+    "112": {"product_ids": [5, 2, 8]},
+    "121": {"product_ids": [6, 8, 11]},
+    "122": {"product_ids": [2, 9, 5]},
+    "210": {"product_ids": [1, 11, 3]},
+    "220": {"product_ids": [1, 7, 6]},
+    "211": {"product_ids": [4, 8, 12]},
+    "212": {"product_ids": [12, 2, 7]},
+    "221": {"product_ids": [11, 4, 7]},
+    "222": {"product_ids": [7, 8, 9]},
+}
 coffee_products_data = {
     "coffee_products": [
-            {"id":1, "name": 'Ethiopian Yirgacheffe', "price": '$18.99', "origin": 'Ethiopia', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
-            {"id":2, "name": 'Colombian Supremo', "price": '$16.99', "origin": 'Colombia', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
-            {"id":3, "name": 'Costa Rican Tarrazu', "price": '$17.99', "origin": 'Costa Rica', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
-            {"id":4, "name": 'Sumatra Mandheling', "price": '$19.99', "origin": 'Indonesia', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
-            {"id":5, "name": 'Kenya AA', "price": '$20.99', "origin": 'Kenya', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
-            {"id":6, "name": 'Guatemala Antigua', "price": '$18.99', "origin": 'Guatemala', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
-            {"id":7, "name": 'Brazilian Santos', "price": '$15.99', "origin": 'Brazil', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
-            {"id":8, "name": 'Jamaica Blue Mountain', "price": '$49.99', "origin": 'Jamaica', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
-            {"id":9, "name": "Hawaiian Kona", "price": '$45.99', "origin": 'Hawaii', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":1, "name": 'Kenya Muranga Riakiberu', "price": '$18.99', "origin": 'Kenya', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":2, "name": 'Bella Carmona Guatemala', "price": '$16.99', "origin": 'Guatemala', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":3, "name": 'Ethiopia Botabaa', "price": '$17.99', "origin": 'Ethiopia', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":4, "name": 'Ethiopia Yirgacheffe Kochere', "price": '$19.99', "origin": 'Ethiopia', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":5, "name": 'Ethiopian Yirgacheffe Natural', "price": '$20.99', "origin": 'Ethiopia', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":6, "name": 'Ethiopia Kayon Mountain', "price": '$18.99', "origin": 'Ethiopia', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":7, "name": 'Halo Hartume', "price": '$15.99', "origin": 'Ethiopia', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":8, "name": 'Uganda Organic Sipi Falls Honey', "price": '$49.99', "origin": 'Uganda', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
+            {"id":9, "name": "Kenya Thaitu", "price": '$45.99', "origin": 'Kenya', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
             {"id":10, "name": 'Indian Malabar', "price": '$17.99', "origin": 'India', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
             {"id":11, "name": 'Vietnamese Robusta', "price": '$14.99', "origin": 'Vietnam', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
             {"id":12, "name": 'Mexican Altura', "price": '$16.99', "origin": 'Mexico', "image": 'https://ideacdn.net/shop/ba/60/myassets/products/249/yellow-blend-min.jpg?revision=1735568298'},
@@ -141,11 +166,39 @@ class CoffeeProductResponse(BaseModel):
         orm_mode = True"""
 
 #Endpoints
+@app.get("/coffee-groups/{group_id}")
+def get_coffee_group_products(group_id: str):
+    group = coffee_groups.get(group_id)  # Get the group by group_id
+    if not group:
+        raise HTTPException(status_code=404, detail="Coffee group not found")
+
+    if "product_ids" not in group:
+        raise HTTPException(status_code=404, detail="No products in this group")
+
+    product_ids = group["product_ids"]  # Use square brackets to access product_ids
+    products = [
+        product
+        for product in coffee_products_data["coffee_products"]
+        if product["id"] in product_ids
+    ]
+    return {"products": products}
+
 @app.get("/coffee-products")
 def get_coffee_products():
     return coffee_products_data
 
 
+"""@app.get("/coffee-products/{answers}")
+def get_coffee_products_by_id(product_id: List[int] = Query(...)):
+    filtered_products = [
+        product for product in coffee_products_data["coffee_products"]
+        if product["id"] in product_id
+    ]
+    if filtered_products:
+        return {"coffee_products" : filtered_products}
+    else:
+        raise HTTPException(status_code=404, detail="Product not found")
+"""
 @app.get("/coffee-menu/")
 def get_coffee_menu():
     return coffee_menu_data

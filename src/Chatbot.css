@@ -152,6 +152,15 @@
     border-radius: 8px;
     padding: 5px;
   }
+  
+  button.end-quiz {
+    background-color: #89726d;
+    color: #c9c3bf;
+    border: none;
+    border-radius: 8px;
+    padding: 5px;
+    margin-top: 10px;
+  }
 
   button.order-button{
     background-color: #89726d;
@@ -208,6 +217,49 @@
   button:active {
     transform: scale(0.98);
   }
+
+  .quiz-container, .result-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.question-header {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.answers {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.answer-button, .restart-button {
+    padding: 10px 20px;
+    background-color: #6b4226;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.answer-button:hover, .restart-button:hover {
+    background-color: #8c5c39;
+}
+
+.result-container a {
+    display: block;
+    margin: 10px 0;
+    color: #6b4226;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.result-container a:hover {
+    text-decoration: underline;
+}
   
 .landing-page {
     display: flex;
@@ -233,7 +285,6 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
   transition: transform 0.3s;
-  /*justify-content: space-between;*/
   display: flex;
   flex-direction: column;
   align-items: center;

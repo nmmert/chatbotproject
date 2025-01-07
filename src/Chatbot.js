@@ -3,6 +3,33 @@ import "./Chatbot.css";
 
 const sizeOptions = ["Small", "Medium", "Large"];
 
+const questions = [
+    {
+        question: "Which method do you use to brew coffee?",
+        answers: [
+            "Espresso / Mokapot / Aeropress",
+            "Filter / French Press",
+            "V60 / Chemex",
+        ],
+    },
+    {
+        question: "Do you use milk with your coffee?",
+        answers: [
+            "Never, I like my coffee black",
+            "Sometimes",
+            "Always, I can’t drink my coffee without milk",
+        ],
+    },
+    {
+        question: "Which natural flavors do you prefer?",
+        answers: [
+            "Caramel, Chocoalte, Nutty",
+            "Fruity, Floral, Citrus",
+            "Spicy, Earthy, Herbal",
+        ],
+    },
+];
+
 
 const Chatbot = () => {
     const [messages, setMessages] = useState([
@@ -15,11 +42,17 @@ const Chatbot = () => {
     const [chatHistory, setChatHistory] = useState();
     const [askBaristaActive, setaskBaristaActive] = useState(false);
     const [orderActive, setOrderActive] = useState(false);
+    const [findCoffeeTasteActive, setFindCoffeeTasteActive] = useState(false);
     const [selectedCoffee, setSelectedCoffee] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [coffeeMenu, setCoffeeMenu] = useState([]);
-    const [coffeeProducts, setCoffeeProducts] = useState([]);
+
     const [selectedCoffeeProduct, setSelectedCoffeeProduct] = useState(null);
+
+    const [answers, setAnswers] = useState(["", "", ""]);
+    const [result, setResult] = useState(null);
+    const [quizStep, setQuizStep] = useState(0);
+
 
 
     useEffect(() => {
@@ -30,18 +63,7 @@ const Chatbot = () => {
           })
           .catch((error) => console.error("Error fetching coffee menu:", error));
       }, []);
-
-    useEffect(() => {
-        fetch("http://localhost:8000/coffee-products")
-          .then((response) => response.json())
-          .then((data) => {
-            setCoffeeProducts(data.coffee_products || []);
-            console.log(data.coffee_products[1])
-            console.log(data.coffee_products)
-          })
-          .catch((error) => console.error("Error fetching coffee products:", error));
-      }, []);
-
+      
     const chatWindowRef = useRef(null);
 
     const addMessage = (sender, text) => {
@@ -59,14 +81,48 @@ const Chatbot = () => {
             setCurrentStep("askBarista");
             setaskBaristaActive(true);
         }else if(option === "Find your taste of coffee"){
-            //findYourCoffeeProgram
             setCurrentStep("findCoffeeTaste");
-        }else if(option === "Make your custom coffee"){
-            //customCoffeeProgram
-            setCurrentStep("customCoffee");
         }
     };
 
+    const handleAnswerSelect = (answerIndex) => {
+        const updatedAnswers = [...answers];
+        updatedAnswers[quizStep] = answerIndex.toString();
+        setAnswers(updatedAnswers);
+        setFindCoffeeTasteActive(true);
+
+        if (quizStep < questions.length - 1) {
+            setQuizStep(quizStep + 1);
+        } else {
+            fetchCoffeeGroup(updatedAnswers.join(""));
+        }
+    };
+
+    const fetchCoffeeGroup = async (answerKey) => {
+        setLoading(true);
+        try {
+            const response = await fetch(`http://localhost:8000/coffee-groups/${answerKey}`);
+            if (response.ok) {
+                const data = await response.json();
+                setResult(data.products);
+            } else {
+                console.error("Failed to fetch coffee group");
+                setResult({error: "Unable to find coffee group"});
+            }
+        } catch (error) {
+            console.error("Error fetching coffee group:", error);
+            setResult({error: "An error occurred while fetching coffee group"});
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+
+    const restartQuiz = () => {
+        setQuizStep(0);
+        setAnswers(["", "", ""]);
+        setResult(null);
+    };
 
     const handleCoffeeSelection = async (coffee, coffeeSize) => {
         if(selectedCoffee === null || selectedSize === null){
@@ -100,6 +156,14 @@ const Chatbot = () => {
             addMessage("Bot", "An error occurred while placing the order. Please try again.");
             console.error(error);
         }
+    };
+
+    const handleEndQuiz = () => {
+        setMessages([{ sender: "Bot", text: "Welcome to the Smart Coffee Assistant!" }]);
+        setCurrentStep("start");
+        setFindCoffeeTasteActive(false);
+        setAnswers(["", "", ""]);
+        setResult(null);
     };
 
     const handleEndOrderCoffee = () => {
@@ -166,6 +230,7 @@ const Chatbot = () => {
         }
     }, [messages]);
 
+
     return (
         <div>
             <div className="chatbot">
@@ -187,14 +252,13 @@ const Chatbot = () => {
                             <button onClick={() => handleOptionClick("Order a coffee")}>Order a coffee</button>
                             <button onClick={() => handleOptionClick("Ask the barista")}>Ask the barista</button>
                             <button onClick={() => handleOptionClick("Find your taste of coffee")}>Find your taste of coffee</button>
-                            <button onClick={() => handleOptionClick("Make your custom coffee")}>Make your custom coffee</button>
                         </div>
                     ) : currentStep === "orderCoffee" ? (
                         <div className="coffee-menu">
                             {coffeeMenu.map((coffee) => (
                                 <div className="coffee-item" key={coffee}>
                                     <button 
-                                        className= {`coffee-button ${
+                                        className={`coffee-button ${
                                             selectedCoffee === coffee ? "active" : ""
                                         }`}
                                         onClick={() => handleCoffeeClick(coffee)}
@@ -218,19 +282,19 @@ const Chatbot = () => {
                                     )}
                                 </div>
                             ))}
-                        {orderActive && (
+                            {orderActive && (
                                 <button className="end-order" onClick={handleEndOrderCoffee}>
                                     End Order
                                 </button>
                             )}
-                        {selectedCoffee && selectedSize && (
-                            <button
-                                className="order-button"
-                                onClick={() => handleCoffeeSelection(selectedCoffee, selectedSize)}
-                            >
-                                Order
-                            </button>
-                        )}
+                            {selectedCoffee && selectedSize && (
+                                <button
+                                    className="order-button"
+                                    onClick={() => handleCoffeeSelection(selectedCoffee, selectedSize)}
+                                >
+                                    Order
+                                </button>
+                            )}
                         </div>
                     ) : currentStep === "askBarista" ? (
                         <>
@@ -245,42 +309,77 @@ const Chatbot = () => {
                                 </button>
                             )}
                         </>
-                    /*) : currentStep === "findCoffeeTaste" ? (
-                        
-                    ) : null}*/
                     ) : null}
                 </div>
-                
             </div>
             <div>
             {currentStep === "findCoffeeTaste" ? (
-                <div className="landing-page">
-                    <div className="products-grid">
-                        {coffeeProducts.map((product) => (
-                            <div className="product-card" key={product}>
-                                <button
-                                    className={`product-card-button ${
-                                        selectedCoffeeProduct === product ? "active" : ""
-                                }`}
-                                onClick={() => handleLandingPage(product)}
-                                >
-                                    <h3>{product.name}</h3>
-                                    <div className="product-image">
-                                        <img src={product.image} alt={product.name} />
-                                    </div>
-                                    <div className="product-details">
-                                        <p className="bean-origin">{product.origin}</p>
-                                        <p className="bean-price">{product.price}</p>
-                                    </div>
-                                </button>
+                <div className="quiz-container">
+                    {!result ? (
+                        <>
+                            <h3 className="question-header">{questions[quizStep].question}</h3>
+                            <div className="answers">
+                                {questions[quizStep].answers.map((answer, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => handleAnswerSelect(index)}
+                                        className="answer-button"
+                                    >
+                                        {answer}
+                                    </button>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                            {findCoffeeTasteActive && (
+                                <button className="end-quiz" onClick={handleEndQuiz}>
+                                    End Quiz
+                                </button>
+                            )}
+                        </>
+                    ) : (
+                        <div className="result-container">
+                            {loading ? (
+                                <p>Loading your coffee group...</p>
+                            ) : result.error ? (
+                                <p>{result.error}</p>
+                            ) : (
+                                <div>
+                                    <h3>Your Coffee Group: </h3>
+                                    <div className="landing-page">
+                                        {result?.map((product) => (
+                                                <div className="product-card" key={product.id}>
+                                                <button
+                                                    className={`product-card-button ${
+                                                        selectedCoffeeProduct === product ? "active" : ""
+                                                }`}
+                                                onClick={() => handleLandingPage(product)}
+                                                >
+                                                    <h3>{product.name}</h3>
+                                                    <div className="product-image">
+                                                        <img src={product.image} alt={product.name} />
+                                                    </div>
+                                                    <div className="product-details">
+                                                        <p className="bean-origin">{product.origin}</p>
+                                                        <p className="bean-price">{product.price}</p>
+                                                    </div>
+                                                </button>
+                                            </div>
+                                            ))}                                  
+                                            
+                                    </div>
+                                </div>
+                            )}
+                            <button onClick={restartQuiz} className="restart-button">
+                                Restart Quiz
+                            </button>
+                        </div>
+                    )}
                 </div>
-                ) : null}
+            ) : null}
+    
         </div>
     </div>
     );
+    
 };
 export default Chatbot;
 
