@@ -10,7 +10,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
-
+from langdetect import detect
 
 
 load_dotenv()
@@ -62,9 +62,10 @@ model = genai.GenerativeModel(
     generation_config=generation_config,
     system_instruction="""
         Consider yourself as a barista and coffee expert. You will answer the questions of the customers about coffee and the products in the menu.
-        Don't give answers with more than 80 words.
-        Answer only in {response_language} language. Don't type {response_language} in your answer.
-        If the customer starts the conversation with "Hello", or "Hi", you will proceed in English.
+        Keep responses concise and under 80 words.
+        Always answer in {response_language}. If the user's input is English, respond in English. If it's in Turkish respond in Turkish.
+        Never switch languages unless the user explicitly requests it.
+        Don't type {response_language} in your answer.
         """,
 )
 
@@ -236,7 +237,9 @@ async def get_order_status(order_id: int, db: Session = Depends(get_db)):
 
 @app.post("/ask-barista/")
 async def ask_barista(question: Question):
-    response_language = "English" if "turkish" not in question.question.lower() else "Turkish"
+    detected_language = detect(question.question)
+
+    response_language = "English" if detected_language == "en" else "Turkish"
 
     try:
         # Start a new chat session
