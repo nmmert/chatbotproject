@@ -49,11 +49,19 @@
   .coffee-menu {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* Three columns */
+    grid-template-rows: auto; /* Two rows */
     gap: 10px;
   }
 
   .coffee-item {
     position: relative;;
+  }
+
+  .coffee-image {
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    margin-bottom: 3px;
   }
 
   .coffee-button {
@@ -100,6 +108,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
+    width: 100%;
     padding: 10px;
     border: none;
     border-radius: 8px;
@@ -146,11 +156,14 @@
   }
 
   button.end-order{
+    display: flex;
+    align-items: center;
     background-color: #89726d;
     color: #c9c3bf;
     border: none;
     border-radius: 8px;
     padding: 5px;
+    grid-row: 6;
   }
   
   button.end-quiz {
@@ -326,6 +339,7 @@
 .bean-origin {
   color: #666;
   font-size: 13px;
+  margin-right: 15px;
 }
 
 .bean-price {

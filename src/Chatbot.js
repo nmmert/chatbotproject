@@ -1,5 +1,6 @@
 import React, {useEffect, useLayoutEffect, useRef, useState } from "react"
 import "./Chatbot.css";
+import coffee_icon from './assets/cup-of-hot-chocolate.png';
 
 const sizeOptions = ["Small", "Medium", "Large"];
 
@@ -49,9 +50,10 @@ const Chatbot = () => {
 
     const [selectedCoffeeProduct, setSelectedCoffeeProduct] = useState(null);
 
+    const [quizStep, setQuizStep] = useState(0);
     const [answers, setAnswers] = useState(["", "", ""]);
     const [result, setResult] = useState(null);
-    const [quizStep, setQuizStep] = useState(0);
+    
 
 
 
@@ -64,7 +66,6 @@ const Chatbot = () => {
           .catch((error) => console.error("Error fetching coffee menu:", error));
       }, []);
       
-    const chatWindowRef = useRef(null);
 
     const addMessage = (sender, text) => {
         setMessages((prevMessages) => [...prevMessages, {sender, text}]);
@@ -122,6 +123,10 @@ const Chatbot = () => {
         setQuizStep(0);
         setAnswers(["", "", ""]);
         setResult(null);
+    };
+
+    const handleCoffeeClick = (coffee) => {
+        setSelectedCoffee(coffee === selectedCoffee ? null : coffee);
     };
 
     const handleCoffeeSelection = async (coffee, coffeeSize) => {
@@ -216,13 +221,13 @@ const Chatbot = () => {
         }
     };
 
-    const handleCoffeeClick = (coffee) => {
-        setSelectedCoffee(coffee === selectedCoffee ? null : coffee);
-    };
+    
 
     const handleLandingPage = (product) => {
         setSelectedCoffeeProduct(product === selectedCoffeeProduct ? null : product);
     }
+
+    const chatWindowRef = useRef(null);
 
     useLayoutEffect(() => {
         if (chatWindowRef.current){
@@ -263,6 +268,7 @@ const Chatbot = () => {
                                         }`}
                                         onClick={() => handleCoffeeClick(coffee)}
                                     >
+                                        <img className="coffee-image" src={coffee_icon} alt={coffee} />
                                         {coffee}
                                     </button>
                                     {selectedCoffee === coffee && (
@@ -282,17 +288,17 @@ const Chatbot = () => {
                                     )}
                                 </div>
                             ))}
-                            {orderActive && (
-                                <button className="end-order" onClick={handleEndOrderCoffee}>
-                                    End Order
-                                </button>
-                            )}
                             {selectedCoffee && selectedSize && (
                                 <button
                                     className="order-button"
                                     onClick={() => handleCoffeeSelection(selectedCoffee, selectedSize)}
                                 >
                                     Order
+                                </button>
+                            )}
+                            {orderActive && (
+                                <button className="end-order" onClick={handleEndOrderCoffee}>
+                                    End Order
                                 </button>
                             )}
                         </div>

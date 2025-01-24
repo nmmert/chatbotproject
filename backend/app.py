@@ -124,7 +124,7 @@ coffee_menu_data = {
         "Macchiato",
         "V60",
         "Cortado",
-        "Affogato"
+        "Affogato",
     ],
 }
 
@@ -146,37 +146,18 @@ class CoffeeOrderResponse(BaseModel):
 class Config:
     orm_mode = True
 
-"""class CoffeeProduct(Base):
-    __tablename__ = "coffee_products"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    price = Column(Integer)
-    origin = Column(String)
-
-class CoffeeProductCreate(BaseModel):
-    name: str
-    price: int
-    origin: str
-
-class CoffeeProductResponse(BaseModel):
-    id: int
-    name: str
-    price: int
-    origin: str
-    class Config:
-        orm_mode = True"""
 
 #Endpoints
 @app.get("/coffee-groups/{group_id}")
 def get_coffee_group_products(group_id: str):
-    group = coffee_groups.get(group_id)  # Get the group by group_id
+    group = coffee_groups.get(group_id)
     if not group:
         raise HTTPException(status_code=404, detail="Coffee group not found")
 
     if "product_ids" not in group:
         raise HTTPException(status_code=404, detail="No products in this group")
 
-    product_ids = group["product_ids"]  # Use square brackets to access product_ids
+    product_ids = group["product_ids"] 
     products = [
         product
         for product in coffee_products_data["coffee_products"]
@@ -189,17 +170,6 @@ def get_coffee_products():
     return coffee_products_data
 
 
-"""@app.get("/coffee-products/{answers}")
-def get_coffee_products_by_id(product_id: List[int] = Query(...)):
-    filtered_products = [
-        product for product in coffee_products_data["coffee_products"]
-        if product["id"] in product_id
-    ]
-    if filtered_products:
-        return {"coffee_products" : filtered_products}
-    else:
-        raise HTTPException(status_code=404, detail="Product not found")
-"""
 @app.get("/coffee-menu/")
 def get_coffee_menu():
     return coffee_menu_data
@@ -220,7 +190,7 @@ def place_order(order: CoffeeOrderCreate, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail="Failed to place the order"+ str(e))
     
-@app.get("/order-status/{order_id}")
+"""@app.get("/order-status/{order_id}")
 async def get_order_status(order_id: int, db: Session = Depends(get_db)):
     try:
         order = db.query(CoffeeOrder).filter(CoffeeOrder.id == order_id).first()
@@ -233,7 +203,7 @@ async def get_order_status(order_id: int, db: Session = Depends(get_db)):
         else:
             return {"status": "Order not found"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to retrieve the order status"+ str(e))
+        raise HTTPException(status_code=500, detail="Failed to retrieve the order status"+ str(e))"""
 
 @app.post("/ask-barista/")
 async def ask_barista(question: Question):
@@ -255,11 +225,9 @@ async def ask_barista(question: Question):
         else:
             full_message = question.question
 
-        # Send the message and return the result
         result = chat_session.send_message(full_message + json.dumps(coffee_menu_data))
         return {"text": result.text, "language": response_language}
 
     except Exception as e:
-        # Log the error (for internal debugging purposes)
         print(f"Error in ask_barista endpoint: {str(e)}")
         return {"error": "An error occurred while processing your request. Please try again later."}
