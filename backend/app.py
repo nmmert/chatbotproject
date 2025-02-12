@@ -1,5 +1,5 @@
 import json
-from fastapi import Depends, FastAPI, HTTPException, Query, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, logger
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -132,7 +132,7 @@ coffee_menu_data = {
     ],
 }
 
-
+print("GEMINI_API_KEY:", os.getenv("GEMINI_API_KEY"))
 
 class Question(BaseModel):
     question: str
@@ -188,7 +188,6 @@ def place_order(order: CoffeeOrderCreate, db: Session = Depends(get_db)):
         db.add(new_order)
         db.commit()
         db.refresh(new_order)
-        db.close()
         return new_order
     except Exception as e:
         db.rollback()
